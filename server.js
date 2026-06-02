@@ -8,6 +8,17 @@ const scanRouter = require('./src/routes/scan');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Request logging to aid debugging of method/path issues (e.g. 405)
+app.use((req, res, next) => {
+  try {
+    logger.info(`Incoming request: ${req.method} ${req.originalUrl}`);
+  } catch (e) {
+    // Fallback to console if logger fails
+    console.log(`Incoming request: ${req.method} ${req.originalUrl}`);
+  }
+  next();
+});
+
 // Middleware
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));

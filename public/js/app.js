@@ -98,8 +98,18 @@ async function performScan(options, includeZip = false) {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || `HTTP ${response.status}`);
+      let errorMessage = `HTTP ${response.status} ${response.statusText}`;
+
+      try {
+        const errorData = await response.json();
+        if (errorData && errorData.error) {
+          errorMessage = errorData.error;
+        }
+      } catch (_) {
+        // Ignore parse failures for non-JSON error responses
+      }
+
+      throw new Error(errorMessage);
     }
 
     if (includeZip) {
